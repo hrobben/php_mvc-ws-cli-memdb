@@ -1,0 +1,13 @@
+<?php
+ if ($GLOBALS['XML'] || $GLOBALS['JSON']) {
+    if ($GLOBALS['JSON']) {
+        echo ("<pre>".json_encode($articles)."</pre>\n");
+    } else {
+        $array_to_xml = new Array_to_xml();
+        echo ("<pre>".$array_to_xml->convert($articles,"true")."</pre>\n");
+    }
+ } else {
+    foreach ($articles as $article) { ?>
+    <?=$article['id'];?>: <?=$article['title']."\n";?>
+<?php }
+    }?>

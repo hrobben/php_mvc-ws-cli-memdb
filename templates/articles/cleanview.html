@@ -1,0 +1,16 @@
+<?php
+if ($GLOBALS['XML'] || $GLOBALS['JSON']) {
+$articles = [
+    "id"    => "$id",
+    "title" => "$title",
+    "body"  => "$body",
+];
+if ($GLOBALS['JSON']) {
+        echo (json_encode($articles))."\n";
+    } else {
+        $array_to_xml = new Array_to_xml();
+        echo ($array_to_xml->convert($articles,"true"))."\n";
+    }
+} else { ?>
+<?= $title ?> => <?= $body."\n" ?>
+<?php }?>

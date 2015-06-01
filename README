@@ -1,0 +1,28 @@
+Assignment
+==========
+
+Refactor the code so that it supports the following:
+
+* The request/dispatch process can be triggered from other sources than a HTTP
+  request. This could be via a WebSocket or directly from the command line, for
+  example, with the request data being passed in some fixed format.
+
+  You do not have to implement the other request types directly, as long as the
+  process / flow for them is clear. If it helps the presentation of your
+  solution you can augment your structure with (pseudo) code.
+
+* The data source for models, now a file-based SQLite3 database, should be
+  configurable at central location. For example, we would like to use an
+  in-memory database for unit tests.
+
+* The output can be something different than just the one from the current
+  template engine. For example, XML or JSON output. This output format should
+  be selectable in the request.  We would also want to be able to change
+  template engines without changing too much code.
+
+Any remarks on this system are welcome: what would you do different, what is it
+missing or what does it do just plain wrong?
+
+Note: the current setup would not work under Windows. It would be
+possible to make it multi-platform, but this is not needed unless you are
+working in Windows yourself.

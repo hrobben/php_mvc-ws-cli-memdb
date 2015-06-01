@@ -1,0 +1,17 @@
+<html>
+<head>
+    <title>Articles index</title>
+</head>
+<body>
+<ul>
+<?php
+ foreach ($articles as $article) { ?>
+    <li>
+        <a href="<?=URL;?>/article/<?=$article['id']?>/slug.html">
+            <?=$article['id'];?>: <?=$article['title'];?>
+        </a>
+    </li>
+<?php } ?>
+</ul>
+</body>
+</html>
