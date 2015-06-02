@@ -13,16 +13,16 @@ class Dispatcher
     public function dispatch()
     {
         $fullRequestUri = $GLOBALS['REQ_URI'];
-        // not needed in this method...
-/*        $requestUriParts = explode('?', $fullRequestUri, 2);
-        $relativeRequestUri = substr($requestUriParts[0], strlen(BASE_URL));*/
+        // only needed for old url with index.php?url=true  in the request...
+        $requestUriParts = explode('?', $fullRequestUri, 2);
+        $relativeRequestUri = substr($requestUriParts[0], strlen(BASE_URL));  // never used elsewhere....
 
         $routeParams = array(); // to put in extra params.
         $queryParams = $_GET;
         $extraData = $_POST;
 
         foreach ($this->routes as $route => $controllerInfo) {
-                if (preg_match('@' . $route . '@', $fullRequestUri, $routeParams) === 1) {  // $requestUriParts replaced with $fullRequestUri
+                if (preg_match('@' . $route . '@', $fullRequestUri, $routeParams) === 1) {  // int preg_match ( string $pattern , string $subject [, array &$matches [, int $flags = 0 [, int $offset = 0 ]]] )
                 list($controllerName, $controllerAction) = $controllerInfo;
 
                 // Remove full regex pattern
