@@ -11,7 +11,7 @@ class ArticlesController extends Controller
 
         $templateEngine = new TemplateEngine();
         return $templateEngine->render(
-            (ISCLI||$GLOBALS['XML']||$GLOBALS['JSON']?'articles/clean.html':'articles/index.html'),
+            (ISCLI || $GLOBALS['XML'] || $GLOBALS['JSON'] ? 'articles/clean.html' : 'articles/index.html'),
             array(
                 'articles' => $articles,
             )
@@ -28,6 +28,6 @@ class ArticlesController extends Controller
         }
 
         $templateEngine = new TemplateEngine();
-        return $templateEngine->render((ISCLI||$GLOBALS['XML']||$GLOBALS['JSON']?'articles/cleanview.html':'articles/view.html'), $article);
+        return $templateEngine->render((ISCLI || $GLOBALS['XML'] || $GLOBALS['JSON'] ? 'articles/cleanview.html' : 'articles/view.html'), $article);
     }
 }

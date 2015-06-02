@@ -1,6 +1,8 @@
 <?php
 if (ISCLI) {
-    if (empty($argv[1])) { die("\n\n\n\nuse index.php -h to let this work\n\n\n\n");}
+    if (empty($argv[1])) {
+        die("\n\n\n\nuse index.php -h to let this work\n\n\n\n");
+    }
     if ($argv[1] == '-h' || $argv[1] == '--help') {
         echo "-h  --help         shows this text.\n\n";
         echo "    --article=#id  where \"#id\" is the id number of the acticle, also second arg --xml or --json\n\n";
