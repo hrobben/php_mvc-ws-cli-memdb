@@ -4,6 +4,7 @@ define('ISCLI', PHP_SAPI === 'cli');
 define('WS_PORT', '9030');  // websocket port
 define('DB_FILE',':memory:');
 // define('DB_FILE','sqlite3.db');
+define('MAGIC_GUID','258EAFA5-E914-47DA-95CA-C5AB0DC85B11'); // websocket HASH key
 
 if (DB_FILE === ':memory:') {    // recreate dbase if in memory
     $dbFilename = DB_FILE;

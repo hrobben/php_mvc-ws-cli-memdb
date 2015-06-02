@@ -3,8 +3,8 @@
     if ($GLOBALS['JSON']) {
         echo ("<pre>".json_encode($articles)."</pre>\n");
     } else {
-        $array_to_xml = new Array_to_xml();
-        echo ("<pre>".$array_to_xml->convert($articles,"true")."</pre>\n");
+        $arrayToXml = new ArrayToXml();
+        echo ("<pre>".$ArrayToXml->convert($articles,"true")."</pre>\n");
     }
  } else {
     foreach ($articles as $article) { ?>

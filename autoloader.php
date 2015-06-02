@@ -21,7 +21,7 @@ function load($class)
             $extraPath = 'classes/';
     }
 
-	$file = dirname(__FILE__) . '/' . $extraPath . $class . '.php';
+    $file = dirname(__FILE__) . '/' . $extraPath . $class . '.php';
     if (file_exists($file)) {
         require_once $file;
     }
