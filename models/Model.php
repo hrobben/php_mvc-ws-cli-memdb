@@ -7,7 +7,7 @@ class Model
 
     public function __construct()
     {
-        // assert($this->table !== null);   // for debugging alright, but in production better use:  if with exception.
+        // assert($this->table !== null); // for debugging alright, but in production better use:  if with exception.
         assert(isset($this->table));
         if (!isset($this->table)) {
             throw new Exception('Records must be set before this is called');
