@@ -2,6 +2,12 @@
 
 class TemplateEngine
 {
+    /**
+     * @param $templateName
+     * @param array $templateParams
+     * @return string
+     * @throws Exception
+     */
     public function render($templateName, $templateParams = array())
     {
         $templatePath = BASE_PATH . '/templates/' . $templateName;

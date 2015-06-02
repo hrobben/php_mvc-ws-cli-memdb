@@ -16,7 +16,7 @@ abstract class WebSocketServer
     protected $headerSecWebSocketProtocolRequired = false;
     protected $headerSecWebSocketExtensionsRequired = false;
 
-    function __construct($addr, $port, $bufferLength = 2048)
+    public function __construct($addr, $port, $bufferLength = 2048)
     {
         $this->maxBufferSize = $bufferLength;
         $this->master = socket_create(AF_INET, SOCK_STREAM, SOL_TCP) or die("Failed: socket_create()");
@@ -25,8 +25,6 @@ abstract class WebSocketServer
         socket_listen($this->master, 20) or die("Failed: socket_listen()");
         $this->sockets['m'] = $this->master;
         $this->stdout("Server started\nListening on: $addr:$port\nMaster socket: " . $this->master);
-
-
     }
 
     abstract protected function process($user, $message); // Called immediately when the data is recieved.

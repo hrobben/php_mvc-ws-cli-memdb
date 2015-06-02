@@ -35,14 +35,14 @@ class Dispatcher
                 $controllerClass = ucfirst($controllerName) . 'Controller';
                 $controller = new $controllerClass($queryParams, $extraData);
 
-                /*                $output = call_user_func_array(
+                                $output = call_user_func_array(
                                     array($controller, 'action' . ucfirst($controllerAction)),
                                     $routeParams
-                                );*/
+                                );
                 // more performance with solution below.
                 // $this->routes gives max 2 params through to method.
-                $act = 'action' . ucfirst($controllerAction);  // first action setting, then call method with or without max 2 params.
-                $output = $controller->$act((isset($routeParams[0]) ? $routeParams[0] : ''), (isset($routeParams[1]) ? $routeParams[1] : ''));
+ /*               $act = 'action' . ucfirst($controllerAction);  // first action setting, then call method with or without max 2 params.
+                $output = $controller->$act((isset($routeParams[0]) ? $routeParams[0] : ''), (isset($routeParams[1]) ? $routeParams[1] : ''));*/
 
                 // print $output;
 
