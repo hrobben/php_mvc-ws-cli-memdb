@@ -4,14 +4,14 @@
 </head>
 <body>
 <ul>
-<?php
+    <?php
  foreach ($articles as $article) { ?>
     <li>
         <a href="<?=URL;?>/article/<?=$article['id']?>/slug.html">
             <?=$article['id'];?>: <?=$article['title'];?>
         </a>
     </li>
-<?php } ?>
+    <?php } ?>
 </ul>
 </body>
 </html>

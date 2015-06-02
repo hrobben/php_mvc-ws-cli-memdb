@@ -2,9 +2,9 @@
 
 define('ISCLI', PHP_SAPI === 'cli');
 define('WS_PORT', '9030');  // websocket port
-define('DB_FILE',':memory:');
+define('DB_FILE', ':memory:');
 // define('DB_FILE','sqlite3.db');
-define('MAGIC_GUID','258EAFA5-E914-47DA-95CA-C5AB0DC85B11'); // websocket HASH key
+define('MAGIC_GUID', '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'); // websocket HASH key
 
 if (DB_FILE === ':memory:') {    // recreate dbase if in memory
     $dbFilename = DB_FILE;
@@ -40,9 +40,9 @@ if (!ISCLI) {
     define('URL', 'http://localhost/articles');  // for cli use
     if (isset($argv[1])) {
         switch ($argv[1]) {
-            case (substr($argv[1],0,10) == '--article='):
-                $u='/articles/'.str_replace('--','',$argv[1].(isset($argv[2])?($argv[2]=='--xml'||$argv[2]=='--json'?'/'.$argv[2]:'/slug'):'/slug'));
-                $GLOBALS['REQ_URI'] = str_replace('=','/',$u);
+            case (substr($argv[1], 0, 10) == '--article='):
+                $u = '/articles/' . str_replace('--', '', $argv[1] . (isset($argv[2]) ? ($argv[2] == '--xml' || $argv[2] == '--json' ? '/' . $argv[2] : '/slug') : '/slug'));
+                $GLOBALS['REQ_URI'] = str_replace('=', '/', $u);
                 break;
             case ('--xml'):
                 $GLOBALS['REQ_URI'] = '/articles/xml';
@@ -65,12 +65,12 @@ if (!ISCLI) {
 if ($websocket) {
     require_once('./tools/Websocket.php');
 } else {
-    if (strpos($GLOBALS['REQ_URI'],'/xml')) {
+    if (strpos($GLOBALS['REQ_URI'], '/xml')) {
         $GLOBALS['XML'] = true;
     } else {
         $GLOBALS['XML'] = false;
     }
-    if (strpos($GLOBALS['REQ_URI'],'/json')) {
+    if (strpos($GLOBALS['REQ_URI'], '/json')) {
         $GLOBALS['JSON'] = true;
     } else {
         $GLOBALS['JSON'] = false;

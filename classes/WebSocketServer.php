@@ -1,7 +1,7 @@
 <?php
 
 //require_once('./daemonize.php');
-require_once('./config/users.php');
+require_once('../config/users.php');
 
 abstract class WebSocketServer
 {
@@ -19,7 +19,7 @@ abstract class WebSocketServer
     public function __construct($addr, $port, $bufferLength = 2048)
     {
         $this->maxBufferSize = $bufferLength;
-        $this->master = socket_create(AF_INET, SOCK_STREAM, SOL_TCP) or die("Failed: socket_create()");
+        $this->master = socket_create(AF_INET, SOCK_STREAM, SOL_TCP) or die("Failed: socket_create()"); // TODO error handling instead of die() may not be used PSR coding style
         socket_set_option($this->master, SOL_SOCKET, SO_REUSEADDR, 1) or die("Failed: socket_option()");
         socket_bind($this->master, $addr, $port) or die("Failed: socket_bind()");
         socket_listen($this->master, 20) or die("Failed: socket_listen()");
@@ -27,24 +27,12 @@ abstract class WebSocketServer
         $this->stdout("Server started\nListening on: $addr:$port\nMaster socket: " . $this->master);
     }
 
-    abstract protected function process($user, $message); // Called immediately when the data is recieved.
-
-    abstract protected function connected($user);        // Called after the handshake response is sent to the client.
-
-    abstract protected function closed($user);           // Called after the connection is closed.
-
-    protected function connecting($user)
+    public function stdout($message)
     {
-        // Override to handle a connecting user, after the instance of the User is created, but before
-        // the handshake has completed.
-    }
-
-    protected function send($user, $message)
-    {
-        //$this->stdout("> $message");
-        $message = $this->frame($message, $user);
-        $result = @socket_write($user->socket, $message, strlen($message));
-    }
+        if ($this->interactive) {
+            echo "$message\n";
+        }
+    } // Called immediately when the data is recieved.
 
     /**
      * Main processing loop
@@ -111,7 +99,14 @@ abstract class WebSocketServer
                 }
             }
         }
-    }
+    }        // Called after the handshake response is sent to the client.
+
+    public function stderr($message)
+    {
+        if ($this->interactive) {
+            echo "$message\n";
+        }
+    }           // Called after the connection is closed.
 
     protected function connect($socket)
     {
@@ -119,6 +114,12 @@ abstract class WebSocketServer
         $this->users[$user->id] = $user;
         $this->sockets[$user->id] = $socket;
         $this->connecting($user);
+    }
+
+    protected function connecting($user)
+    {
+        // Override to handle a connecting user, after the instance of the User is created, but before
+        // the handshake has completed.
     }
 
     protected function disconnect($socket, $triggerClosed = true, $sockErrNo = null)
@@ -144,6 +145,85 @@ abstract class WebSocketServer
                 @socket_write($disconnectedUser->socket, $message, strlen($message));
             }
         }
+    }
+
+    protected function getUserBySocket($socket)
+    {
+        foreach ($this->users as $user) {
+            if ($user->socket == $socket) {
+                return $user;
+            }
+        }
+        return null;
+    }
+
+    abstract protected function closed($user);
+
+    protected function frame($message, $user, $messageType = 'text', $messageContinues = false)
+    {
+        switch ($messageType) {
+            case 'continuous':
+                $b1 = 0;
+                break;
+            case 'text':
+                $b1 = ($user->sendingContinuous) ? 0 : 1;
+                break;
+            case 'binary':
+                $b1 = ($user->sendingContinuous) ? 0 : 2;
+                break;
+            case 'close':
+                $b1 = 8;
+                break;
+            case 'ping':
+                $b1 = 9;
+                break;
+            case 'pong':
+                $b1 = 10;
+                break;
+        }
+        if ($messageContinues) {
+            $user->sendingContinuous = true;
+        } else {
+            $b1 += 128;
+            $user->sendingContinuous = false;
+        }
+
+        $length = strlen($message);
+        $lengthField = "";
+        if ($length < 126) {
+            $b2 = $length;
+        } elseif ($length <= 65536) {
+            $b2 = 126;
+            $hexLength = dechex($length);
+            //$this->stdout("Hex Length: $hexLength");
+            if (strlen($hexLength) % 2 == 1) {
+                $hexLength = '0' . $hexLength;
+            }
+            $n = strlen($hexLength) - 2;
+
+            for ($i = $n; $i >= 0; $i = $i - 2) {
+                $lengthField = chr(hexdec(substr($hexLength, $i, 2))) . $lengthField;
+            }
+            while (strlen($lengthField) < 2) {
+                $lengthField = chr(0) . $lengthField;
+            }
+        } else {
+            $b2 = 127;
+            $hexLength = dechex($length);
+            if (strlen($hexLength) % 2 == 1) {
+                $hexLength = '0' . $hexLength;
+            }
+            $n = strlen($hexLength) - 2;
+
+            for ($i = $n; $i >= 0; $i = $i - 2) {
+                $lengthField = chr(hexdec(substr($hexLength, $i, 2))) . $lengthField;
+            }
+            while (strlen($lengthField) < 8) {
+                $lengthField = chr(0) . $lengthField;
+            }
+        }
+
+        return chr($b1) . chr($b2) . $lengthField . $message;
     }
 
     protected function doHandshake($user, $buffer)
@@ -255,98 +335,8 @@ abstract class WebSocketServer
         return ""; // return either "Sec-WebSocket-Extensions: SelectedExtensions\r\n" or return an empty string.
     }
 
-    protected function getUserBySocket($socket)
-    {
-        foreach ($this->users as $user) {
-            if ($user->socket == $socket) {
-                return $user;
-            }
-        }
-        return null;
-    }
+    abstract protected function connected($user);
 
-    public function stdout($message)
-    {
-        if ($this->interactive) {
-            echo "$message\n";
-        }
-    }
-
-    public function stderr($message)
-    {
-        if ($this->interactive) {
-            echo "$message\n";
-        }
-    }
-
-    protected function frame($message, $user, $messageType = 'text', $messageContinues = false)
-    {
-        switch ($messageType) {
-            case 'continuous':
-                $b1 = 0;
-                break;
-            case 'text':
-                $b1 = ($user->sendingContinuous) ? 0 : 1;
-                break;
-            case 'binary':
-                $b1 = ($user->sendingContinuous) ? 0 : 2;
-                break;
-            case 'close':
-                $b1 = 8;
-                break;
-            case 'ping':
-                $b1 = 9;
-                break;
-            case 'pong':
-                $b1 = 10;
-                break;
-        }
-        if ($messageContinues) {
-            $user->sendingContinuous = true;
-        } else {
-            $b1 += 128;
-            $user->sendingContinuous = false;
-        }
-
-        $length = strlen($message);
-        $lengthField = "";
-        if ($length < 126) {
-            $b2 = $length;
-        } elseif ($length <= 65536) {
-            $b2 = 126;
-            $hexLength = dechex($length);
-            //$this->stdout("Hex Length: $hexLength");
-            if (strlen($hexLength) % 2 == 1) {
-                $hexLength = '0' . $hexLength;
-            }
-            $n = strlen($hexLength) - 2;
-
-            for ($i = $n; $i >= 0; $i = $i - 2) {
-                $lengthField = chr(hexdec(substr($hexLength, $i, 2))) . $lengthField;
-            }
-            while (strlen($lengthField) < 2) {
-                $lengthField = chr(0) . $lengthField;
-            }
-        } else {
-            $b2 = 127;
-            $hexLength = dechex($length);
-            if (strlen($hexLength) % 2 == 1) {
-                $hexLength = '0' . $hexLength;
-            }
-            $n = strlen($hexLength) - 2;
-
-            for ($i = $n; $i >= 0; $i = $i - 2) {
-                $lengthField = chr(hexdec(substr($hexLength, $i, 2))) . $lengthField;
-            }
-            while (strlen($lengthField) < 8) {
-                $lengthField = chr(0) . $lengthField;
-            }
-        }
-
-        return chr($b1) . chr($b2) . $lengthField . $message;
-    }
-
-    //check packet if he have more than one frame and process each frame individually
     protected function split_packet($length, $packet, $user)
     {
         //add PartialPacket and calculate the new $length
@@ -390,6 +380,46 @@ abstract class WebSocketServer
         }
         $this->stdout("########    PACKET END         #########");
     }
+
+    protected function extractHeaders($message)
+    {
+        $header = array('fin' => $message[0] & chr(128),
+            'rsv1' => $message[0] & chr(64),
+            'rsv2' => $message[0] & chr(32),
+            'rsv3' => $message[0] & chr(16),
+            'opcode' => ord($message[0]) & 15,
+            'hasmask' => $message[1] & chr(128),
+            'length' => 0,
+            'mask' => "");
+        $header['length'] = (ord($message[1]) >= 128) ? ord($message[1]) - 128 : ord($message[1]);
+
+        if ($header['length'] == 126) {
+            if ($header['hasmask']) {
+                $header['mask'] = $message[4] . $message[5] . $message[6] . $message[7];
+            }
+            $header['length'] = ord($message[2]) * 256
+                + ord($message[3]);
+        } elseif ($header['length'] == 127) {
+            if ($header['hasmask']) {
+                $header['mask'] = $message[10] . $message[11] . $message[12] . $message[13];
+            }
+            $header['length'] = ord($message[2]) * 65536 * 65536 * 65536 * 256
+                + ord($message[3]) * 65536 * 65536 * 65536
+                + ord($message[4]) * 65536 * 65536 * 256
+                + ord($message[5]) * 65536 * 65536
+                + ord($message[6]) * 65536 * 256
+                + ord($message[7]) * 65536
+                + ord($message[8]) * 256
+                + ord($message[9]);
+        } elseif ($header['hasmask']) {
+            $header['mask'] = $message[2] . $message[3] . $message[4] . $message[5];
+        }
+        //echo $this->strtohex($message);
+        //$this->printHeaders($header);
+        return $header;
+    }
+
+    //check packet if he have more than one frame and process each frame individually
 
     protected function calcoffset($headers)
     {
@@ -478,42 +508,13 @@ abstract class WebSocketServer
         return false;
     }
 
-    protected function extractHeaders($message)
-    {
-        $header = array('fin' => $message[0] & chr(128),
-            'rsv1' => $message[0] & chr(64),
-            'rsv2' => $message[0] & chr(32),
-            'rsv3' => $message[0] & chr(16),
-            'opcode' => ord($message[0]) & 15,
-            'hasmask' => $message[1] & chr(128),
-            'length' => 0,
-            'mask' => "");
-        $header['length'] = (ord($message[1]) >= 128) ? ord($message[1]) - 128 : ord($message[1]);
-
-        if ($header['length'] == 126) {
-            if ($header['hasmask']) {
-                $header['mask'] = $message[4] . $message[5] . $message[6] . $message[7];
-            }
-            $header['length'] = ord($message[2]) * 256
-                + ord($message[3]);
-        } elseif ($header['length'] == 127) {
-            if ($header['hasmask']) {
-                $header['mask'] = $message[10] . $message[11] . $message[12] . $message[13];
-            }
-            $header['length'] = ord($message[2]) * 65536 * 65536 * 65536 * 256
-                + ord($message[3]) * 65536 * 65536 * 65536
-                + ord($message[4]) * 65536 * 65536 * 256
-                + ord($message[5]) * 65536 * 65536
-                + ord($message[6]) * 65536 * 256
-                + ord($message[7]) * 65536
-                + ord($message[8]) * 256
-                + ord($message[9]);
-        } elseif ($header['hasmask']) {
-            $header['mask'] = $message[2] . $message[3] . $message[4] . $message[5];
+    protected function checkRSVBits($headers, $user)
+    { // override this method if you are using an extension where the RSV bits are used.
+        if (ord($headers['rsv1']) + ord($headers['rsv2']) + ord($headers['rsv3']) > 0) {
+            //$this->disconnect($user); // todo: fail connection
+            return true;
         }
-        //echo $this->strtohex($message);
-        //$this->printHeaders($header);
-        return $header;
+        return false;
     }
 
     protected function extractPayload($message, $headers)
@@ -548,13 +549,28 @@ abstract class WebSocketServer
         return $effectiveMask ^ $payload;
     }
 
-    protected function checkRSVBits($headers, $user)
-    { // override this method if you are using an extension where the RSV bits are used.
-        if (ord($headers['rsv1']) + ord($headers['rsv2']) + ord($headers['rsv3']) > 0) {
-            //$this->disconnect($user); // todo: fail connection
-            return true;
+    abstract protected function process($user, $message);
+
+    protected function send($user, $message)
+    {
+        //$this->stdout("> $message");
+        $message = $this->frame($message, $user);
+        $result = @socket_write($user->socket, $message, strlen($message));
+    }
+
+    protected function printHeaders($headers)
+    {
+        echo "Array\n(\n";
+        foreach ($headers as $key => $value) {
+            if ($key == 'length' || $key == 'opcode') {
+                echo "\t[$key] => $value\n\n";
+            } else {
+                echo "\t[$key] => " . $this->strtohex($value) . "\n";
+
+            }
+
         }
-        return false;
+        echo ")\n";
     }
 
     protected function strtohex($str)
@@ -577,20 +593,5 @@ abstract class WebSocketServer
             }
         }
         return $strout . "\n";
-    }
-
-    protected function printHeaders($headers)
-    {
-        echo "Array\n(\n";
-        foreach ($headers as $key => $value) {
-            if ($key == 'length' || $key == 'opcode') {
-                echo "\t[$key] => $value\n\n";
-            } else {
-                echo "\t[$key] => " . $this->strtohex($value) . "\n";
-
-            }
-
-        }
-        echo ")\n";
     }
 }

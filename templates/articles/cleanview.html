@@ -2,15 +2,15 @@
 if ($GLOBALS['XML'] || $GLOBALS['JSON']) {
 $articles = [
     "id"    => "$id",
-    "title" => "$title",
-    "body"  => "$body",
+"title" => "$title",
+"body"  => "$body",
 ];
 if ($GLOBALS['JSON']) {
-        echo (json_encode($articles))."\n";
-    } else {
-        $arraytoxml = new Arraytoxml();
-        echo ($arraytoxml->convert($articles,"true"))."\n";
-    }
+echo (json_encode($articles))."\n";
+} else {
+$arraytoxml = new Arraytoxml();
+echo ($arraytoxml->convert($articles,"true"))."\n";
+}
 } else { ?>
 <?= $title ?> => <?= $body."\n" ?>
 <?php }?>

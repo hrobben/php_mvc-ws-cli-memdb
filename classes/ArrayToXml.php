@@ -7,19 +7,19 @@
  */
 class ArrayToXml
 {
-/**
- * convert array to xml
- * @public
- * @static
- * @example arr2xml::convert(['root'=> ['data'=> ['value'=> 1]]]);
- * @example <root><data><value>1</value></data></root>
- * @example arr2xml::convert(['data'=> ['id'=> 'ID', 'info'=> null, '@info'=> ['attr'=> 'one'], 'more'=> [1, 2]]]);
- * @example <data><id>ID</id><info attr="one"></info><more>1</more><more>2</more></data>
- * @static
- * @param array $arr - basis array for creating xml
- * @param bool $head - return with head tag
- * @return string
- */
+    /**
+     * convert array to xml
+     * @public
+     * @static
+     * @example arr2xml::convert(['root'=> ['data'=> ['value'=> 1]]]);
+     * @example <root><data><value>1</value></data></root>
+     * @example arr2xml::convert(['data'=> ['id'=> 'ID', 'info'=> null, '@info'=> ['attr'=> 'one'], 'more'=> [1, 2]]]);
+     * @example <data><id>ID</id><info attr="one"></info><more>1</more><more>2</more></data>
+     * @static
+     * @param array $arr - basis array for creating xml
+     * @param bool $head - return with head tag
+     * @return string
+     */
     public static function convert(array $arr, $head = true)
     {
         return ($head ? '<?xml version="1.0" encoding="utf-8"?>' : '') . self::var2tag($arr);

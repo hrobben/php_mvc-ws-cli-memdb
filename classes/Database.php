@@ -6,8 +6,7 @@ class Database
 
     public static function getDb()
     {
-        if (self::$db === null)
-        {
+        if (self::$db === null) {
             self::openDb();
         }
 
