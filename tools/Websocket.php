@@ -12,18 +12,21 @@ class echoServer extends WebSocketServer
                 $this->send($user, "hello human");
                 break;
             case "help"   :
-                $this->send($user, "help: <br> articles  => to show all articles.<br>XML => to make output shown in XML on/off.<br>JSON => output in JSON on/off.<br>article=1 => gives single article id=1");
+                $this->send($user, "help: <br> articles  => to show all articles.<br>
+                                    XML => to make output shown in XML on/off.<br>
+                                    JSON => output in JSON on/off.<br>
+                                    article=1 => gives single article id=1");
                 break;
             case (substr($message, 0, 8) == 'article='):
                 $xj = ($GLOBALS['XML'] ? 'xml' : '') . ($GLOBALS['JSON'] ? 'json' : '');
-                $u = '/articles/article/' . substr($message, -1 * (strlen($message) - 8)) . '/' . (empty($xj) ? 'slug' : $xj);
+                $u = '/cli/article/' . substr($message, -1 * (strlen($message) - 8)) . '/' . (empty($xj) ? 'slug' : $xj);
                 $GLOBALS['REQ_URI'] = str_replace('=', '/', $u);
                 $dispatcher = new Dispatcher();
                 $view = $dispatcher->dispatch();
                 $this->send($user, $view);
                 break;
             case "articles"   :
-                $GLOBALS['REQ_URI'] = '/articles/';
+                $GLOBALS['REQ_URI'] = '/cli/';
                 $dispatcher = new Dispatcher();
                 $view = $dispatcher->dispatch();
                 $this->send($user, $view);

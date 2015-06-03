@@ -5,19 +5,18 @@ class Dispatcher
     protected $routes = array(
         '^/$' => array('index', 'index'),
         '^/articles/$' => array('articles', 'index'),
-        '^/articles/xml$' => array('articles', 'index'),
-        '^/articles/json$' => array('articles', 'index'),
+        '^/cli/$' => array('cli', 'index'),
+        '^/cli/articles/(.+)$' => array('cli', 'index'),
+        '^/cli/help$' => array('cli', 'help'),
         '^/articles/article/([^/]+)/(.+)$' => array('articles', 'view'),
+        '^/cli/article/([^/]+)/(.+)$' => array('cli', 'view'),
     );
 
     public function dispatch()
     {
         $fullRequestUri = $GLOBALS['REQ_URI'];
-        // only needed for old url with index.php?url=true  in the request...
-        /*        $requestUriParts = explode('?', $fullRequestUri, 2);
-                $relativeRequestUri = substr($requestUriParts[0], strlen(BASE_URL));  // never used elsewhere....*/
 
-        $routeParams = array(); // to put in extra params.
+        $routeParams = array();
         $queryParams = $_GET;
         $extraData = $_POST;
 
@@ -39,12 +38,6 @@ class Dispatcher
                     array($controller, 'action' . ucfirst($controllerAction)),
                     $routeParams
                 );
-                // more performance with solution below.
-                // $this->routes gives max 2 params through to method.
-                /*               $act = 'action' . ucfirst($controllerAction);  // first action setting, then call method with or without max 2 params.
-                               $output = $controller->$act((isset($routeParams[0]) ? $routeParams[0] : ''), (isset($routeParams[1]) ? $routeParams[1] : ''));*/
-
-                // print $output;
 
                 return $output;
             }

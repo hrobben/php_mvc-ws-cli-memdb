@@ -7,4 +7,9 @@ class Controller
         $this->queryParams = $queryParams;
         $this->extraData = $extraData;
     }
+
+    public function cli()
+    {
+
+    }
 }

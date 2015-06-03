@@ -1,0 +1,18 @@
+<?php
+
+ if ($out == 'slug') {
+foreach ($articles as $article) { ?>
+<?=$article['id'];?>: <?=$article['title']."\n";?>
+<?php }
+    }
+
+if ($out == 'json') {
+        echo ("<pre>".json_encode($articles)."</pre>\n");
+}
+
+if ($out == 'xml') {
+$ArrayToXml = new ArrayToXml();
+echo ("
+<pre>".$ArrayToXml->convert($articles,"true")."</pre>\n");
+}
+?>

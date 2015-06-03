@@ -1,0 +1,21 @@
+<?php
+
+if ($out == 'slug')
+{ ?>
+<?= $title ?> => <?= $body."\n" ?>
+<?php
+} else  {
+$article = [
+"id"    => "$id",
+"title" => "$title",
+"body"  => "$body",
+]; }
+
+if ($out == 'json') {
+echo (json_encode($article))."\n";
+}
+if ($out == 'xml') {
+$ArrayToXml = new ArrayToXml();
+echo ($ArrayToXml->convert($article,"true"))."\n";
+}
+?>
