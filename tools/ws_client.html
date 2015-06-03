@@ -24,6 +24,7 @@
             try {
                 socket = new WebSocket(host);
                 log('WebSocket - status ' + socket.readyState);
+                //noinspection JSUnusedLocalSymbols
                 socket.onopen = function (msg) {
                     log("Welcome - status " + this.readyState);
                 };

@@ -35,23 +35,25 @@ class ArrayToXml
      */
     private static function var2tag($arr, $tab = 0)
     {
-        if (!is_array($arr))
+        if (!is_array($arr)) {
             return $arr;
+        }
         $xml = '';
         foreach ($arr as $key => $value) {
-            if ($key{0} == '@'):
+            if ($key{0} === '@'):
                 $key = substr($key, 1);
                 $xml .= "\n" . self::tab($tab) . '<' . $key . ' ' . self::arr2attr($value) . '>' . self::var2tag($arr[$key], $tab + 1) . '</' . $key . '>';
-            elseif (!is_null($value)):
+            elseif (null !== $value):
                 if (is_array($value) and array_key_exists(0, $value)):
                     $xml .= "\n";
                     foreach ($value as $val)
                         $xml .= self::tab($tab) . '<' . $key . '>' . $val . '</' . $key . '>' . "\n";
                 else:
-                    if (is_array($value) and !array_key_exists('@' . $key, $value))
+                    if (is_array($value) and !array_key_exists('@' . $key, $value)) {
                         $xml .= "\n" . self::tab($tab) . '<' . $key . '>' . self::var2tag($value, $tab + 1) . self::tab($tab) . '</' . $key . '>' . "\n";
-                    else
+                    } else {
                         $xml .= "\n" . self::tab($tab) . '<' . $key . '>' . $value . '</' . $key . '>' . "\n";
+                    }
                 endif;
             endif;
         }
@@ -82,10 +84,12 @@ class ArrayToXml
     {
         $attr_str = '';
         foreach ($attr as $property => $value) {
-            if (is_null($value))
+            if (null === $value) {
                 continue;
-            if (is_numeric($property))
+            }
+            if (is_numeric($property)) {
                 $property = $value;
+            }
             $attr_str .= $property . '="' . $value . '" ';
         }
         return trim($attr_str);

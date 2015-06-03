@@ -9,14 +9,14 @@ class WebSocketUser
     public $handshake = false;
 
     public $handlingPartialPacket = false;
-    public $partialBuffer = "";
+    public $partialBuffer = '';
 
     public $sendingContinuous = false;
-    public $partialMessage = "";
+    public $partialMessage = '';
 
     public $hasSentClose = false;
 
-    function __construct($id, $socket)
+    public function __construct($id, $socket)
     {
         $this->id = $id;
         $this->socket = $socket;

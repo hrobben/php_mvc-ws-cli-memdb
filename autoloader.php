@@ -21,8 +21,9 @@ function load($class)
             $extraPath = 'classes/';
     }
 
-    $file = dirname(__FILE__) . '/' . $extraPath . $class . '.php';
+    $file = __DIR__ . '/' . $extraPath . $class . '.php';
     if (file_exists($file)) {
+        /** @noinspection PhpIncludeInspection */
         require_once $file;
     }
 }

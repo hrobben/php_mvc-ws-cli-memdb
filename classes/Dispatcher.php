@@ -10,7 +10,7 @@ class Dispatcher
         '^/cli/articles/(.+)$' => array('cli', 'index'),
         '^/cli/help$' => array('cli', 'help'),
         '^/articles/article/([^/]+)/(.+)$' => array('articles', 'view'),
-        '^/cli/article/([^/]+)/(.+)$' => array('cli', 'view'),
+        '^/cli/article/([^/]+)/(.+)$' => array('cli', 'view')
     );
 
     public function dispatch()

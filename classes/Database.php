@@ -2,7 +2,7 @@
 
 class Database
 {
-    private static $db = null;
+    private static $db;
 
     public static function getDb()
     {

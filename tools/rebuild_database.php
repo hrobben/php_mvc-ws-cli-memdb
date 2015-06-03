@@ -1,5 +1,6 @@
 <?php
 
+/** @noinspection PhpIncludeInspection */
 require 'config/config.php';
 require 'classes/Database.php';
 

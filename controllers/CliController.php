@@ -12,7 +12,7 @@ class CliController extends Controller
             ('cli/cli.html'),
             array(
                 'articles' => $articles,
-                'out' => $out,
+                'out' => $out
             )
         );
     }
@@ -21,7 +21,7 @@ class CliController extends Controller
     {
         $articleModel = new ArticleModel();
         $article = $articleModel->get($id);
-        $article["out"] = $out;
+        $article['out'] = $out;
 
         if ($article === false) {
             throw new Http404();

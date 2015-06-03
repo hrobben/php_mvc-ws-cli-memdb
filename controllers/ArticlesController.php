@@ -13,7 +13,7 @@ class ArticlesController extends Controller
         return $templateEngine->render(
             'articles/index.html',
             array(
-                'articles' => $articles,
+                'articles' => $articles
             )
         );
     }

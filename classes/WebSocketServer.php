@@ -172,7 +172,7 @@ abstract class WebSocketServer
 
     abstract protected function closed($user);
 
-    protected function frame($message, $user, $messageType = 'text', $messageContinues = false)
+    protected function frame($message, $user, $messageType = 'text', $messageContinues = false) // todo: no more than 3 arguments
     {
         switch ($messageType) {
             case 'continuous':

@@ -6,7 +6,7 @@ ini_set('display_errors', true);  // set false in production...
 
 $dispatcher = new Dispatcher();
 
-define('BASE_PATH', dirname(__FILE__));
+define('BASE_PATH', __DIR__);
 
 require './config/config.php';
 

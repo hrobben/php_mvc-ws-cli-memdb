@@ -2,44 +2,44 @@
 
 class EchoServer extends WebSocketServer
 {
-    protected $maxBufferSize = 1048576; //1MB... overkill for an echo server, but potentially plausible for other applications.
     protected $out = 'slug';
     protected $id;
 
     protected function process($user, $message)
     {
+        $this->maxBufferSize = 1048576;
         switch ($message) {
-            case "hello" :
-                $this->send($user, "hello human");
+            case 'hello' :
+                $this->send($user, 'hello human');
                 break;
-            case "help"   :
-                $this->send($user, "help: <br> articles  => to show all articles.<br>
-xml => to make output shown in XML on/off.<br>json => output in JSON on/off.<br>article=1 => gives single article id=1");
+            case 'help'   :
+                $this->send($user, 'help: <br> articles  => to show all articles.<br>
+xml => to make output shown in XML on/off.<br>json => output in JSON on/off.<br>article=1 => gives single article id=1');
                 break;
-            case (substr($message, 0, 8) == 'article=' && strlen($message) > 8):
+            case (substr($message, 0, 8) === 'article=' && strlen($message) > 8):
                 $this->id = substr($message, -1 * (strlen($message) - 8));
                 $send = new CliController('', '');
                 $view = $send->actionView($this->id, $this->out);
                 $this->send($user, $view);
                 break;
-            case "articles"   :
+            case 'articles'   :
                 $send = new CliController('', '');
                 $view = $send->actionIndex($this->out);
                 $this->send($user, $view);
                 break;
-            case "xml"   :
-                $this->out = ($this->out == 'xml') ? '' : 'xml';
+            case 'xml'   :
+                $this->out = ($this->out === 'xml') ? '' : 'xml';
                 $this->send($user, 'xml = ' . $this->out);
                 break;
-            case "json"   :
-                $this->out = ($this->out == 'json') ? '' : 'json';
+            case 'json'   :
+                $this->out = ($this->out === 'json') ? '' : 'json';
                 $this->send($user, 'json = ' . $this->out);
                 break;
-            case "cli"   :
-                $this->send($user, (PHP_SAPI === 'cli' ? "<b>Your on command line!</b>" : "Not on command line!"));
+            case 'cli'   :
+                $this->send($user, (PHP_SAPI === 'cli' ? '<b>Your on command line!</b>' : 'Not on command line!'));
                 break;
             default      :
-                $this->send($user, "not understood, type help for help");
+                $this->send($user, 'not understood, type help for help');
                 break;
         }
     }

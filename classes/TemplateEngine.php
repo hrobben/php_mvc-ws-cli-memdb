@@ -8,7 +8,7 @@ class TemplateEngine
      * @return string
      * @throws Exception
      */
-    public function render($templateName, $templateParams = array())
+    public function render($templateName, array $templateParams = [])
     {
         $templatePath = BASE_PATH . '/templates/' . $templateName;
 
@@ -32,6 +32,7 @@ class TemplateEngine
         extract($templateParams);
 
         ob_start();
+        /** @noinspection PhpIncludeInspection */
         include $templatePath;
         $output = ob_get_contents();
         ob_end_clean();
