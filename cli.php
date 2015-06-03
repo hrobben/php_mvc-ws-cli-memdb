@@ -3,10 +3,10 @@ if (PHP_SAPI === 'cli') {
     if (!empty($argv[1])) {
         switch ($argv[1]) {
             case ('--articles'):
-                $req_uri = '/cli/' . str_replace('--', '', $argv[1] . (isset($argv[2]) ? ($argv[2] == '--xml' || $argv[2] == '--json' ? '/' . $argv[2] : '/slug') : '/slug'));
+                $req_uri = '/cli/' . str_replace('--', '', $argv[1] . (array_key_exists('2', $argv) ? ($argv[2] == '--xml' || $argv[2] == '--json' ? '/' . $argv[2] : '/slug') : '/slug'));
                 break;
             case (substr($argv[1], 0, 10) == '--article='):
-                $u = '/cli/' . str_replace('--', '', $argv[1] . (isset($argv[2]) ? ($argv[2] == '--xml' || $argv[2] == '--json' ? '/' . $argv[2] : '/slug') : '/slug'));
+                $u = '/cli/' . str_replace('--', '', $argv[1] . (array_key_exists('2', $argv) ? ($argv[2] == '--xml' || $argv[2] == '--json' ? '/' . $argv[2] : '/slug') : '/slug'));
                 $req_uri = str_replace('=', '/', $u);
                 break;
             case ('--xml'):
