@@ -2,7 +2,7 @@
 
 class Dispatcher
 {
-    protected $routes = array(
+    private static $routes = array(
         '^/$' => array('index', 'index'),
         '^/articles/$' => array('articles', 'index'),
         '^/websocket/$' => array('websocket', 'index'),
@@ -21,7 +21,7 @@ class Dispatcher
         $queryParams = $_GET;
         $extraData = $_POST;
 
-        foreach ($this->routes as $route => $controllerInfo) {
+        foreach (self::$routes as $route => $controllerInfo) {
             if (preg_match('@' . $route . '@', $fullRequestUri, $routeParams) === 1) {  // int preg_match ( string $pattern , string $subject [, array &$matches [, int $flags = 0 [, int $offset = 0 ]]] )
                 list($controllerName, $controllerAction) = $controllerInfo;
 

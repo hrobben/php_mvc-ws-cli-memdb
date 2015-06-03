@@ -4,12 +4,12 @@ class WebSocketController extends Controller
 {
     public function actionIndex()
     {
-        $echoserver = new EchoServer('0.0.0.0', WS_PORT);
+        $EchoServer = new EchoServer('0.0.0.0', WS_PORT);
 
         try {
-            $echoserver->run();
+            $EchoServer->run();
         } catch (Exception $e) {
-            $echoserver->stdout($e->getMessage());
+            $EchoServer->stdout($e->getMessage());
         }
     }
 }
