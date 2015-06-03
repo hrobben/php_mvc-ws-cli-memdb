@@ -15,7 +15,7 @@ class Dispatcher
 
     public function dispatch()
     {
-        $fullRequestUri = $GLOBALS['REQ_URI'];
+        $fullRequestUri = REQ_URI;
 
         $routeParams = array();
         $queryParams = $_GET;

@@ -22,7 +22,6 @@ if (PHP_SAPI === 'cli') {
                 $req_uri = '/cli/help';
         }
     }
-    $GLOBALS['REQ_URI'] = $req_uri;
-    // define(REQ_URI, $req_uri);
+    define('REQ_URI', $req_uri);
 }
 

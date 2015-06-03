@@ -16,7 +16,7 @@ class TemplateEngine
             throw new Exception(sprintf('Could not find template: %s', $templatePath));
         }
 
-        $template = file_get_contents($templatePath);
+        //$template = file_get_contents($templatePath);
 
         return $this->evaluateTemplate($templatePath, $templateParams);
     }

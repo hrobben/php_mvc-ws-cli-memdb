@@ -11,7 +11,7 @@ class ArticlesController extends Controller
 
         $templateEngine = new TemplateEngine();
         return $templateEngine->render(
-            ($GLOBALS['XML'] || $GLOBALS['JSON'] ? 'cli/cli.html' : 'articles/index.html'),
+            'articles/index.html',
             array(
                 'articles' => $articles,
             )
@@ -28,6 +28,6 @@ class ArticlesController extends Controller
         }
 
         $templateEngine = new TemplateEngine();
-        return $templateEngine->render(($GLOBALS['XML'] || $GLOBALS['JSON'] ? 'cli/cliview.html' : 'articles/view.html'), $article);
+        return $templateEngine->render('articles/view.html', $article);
     }
 }

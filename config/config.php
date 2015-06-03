@@ -25,15 +25,11 @@ if (DB_FILE === ':memory:') {    // recreate dbase if in memory
 
 define('MAGIC_GUID', '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'); // websocket HASH key
 
-$GLOBALS['XML'] = false;
-$GLOBALS['JSON'] = false;
-$websocket = false;
-
 if (PHP_SAPI !== 'cli') {
     $url = preg_replace('{/$}', '', "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
     define('URL', $url);
     define('USER_IP', $_SERVER['REMOTE_ADDR']);
-    $GLOBALS['REQ_URI'] = $_SERVER['REQUEST_URI'];
+    define('REQ_URI', $_SERVER['REQUEST_URI']);
 } else {
     define('URL', 'http://localhost/cli');
 }

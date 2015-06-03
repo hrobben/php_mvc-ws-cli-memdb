@@ -2,8 +2,8 @@
 /**
  * @param $class
  *
- * All Controler(s) last 10 chars, Modul(s) last 5
- * First Char allways Uppercase....
+ * All Controller(s) last 10 chars, Model(s) last 5
+ * First Char always Uppercase....
  *
  * Switch is faster then if and elseif because switch asking 1 cycle and if every if or elseif.
  *

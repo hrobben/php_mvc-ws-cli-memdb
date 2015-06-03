@@ -1,8 +1,5 @@
 <?php
 
-//require_once('./daemonize.php');
-require_once('config/users.php');
-
 abstract class WebSocketServer
 {
 
@@ -19,10 +16,26 @@ abstract class WebSocketServer
     public function __construct($addr, $port, $bufferLength = 2048)
     {
         $this->maxBufferSize = $bufferLength;
-        $this->master = socket_create(AF_INET, SOCK_STREAM, SOL_TCP) or die("Failed: socket_create()"); // TODO error handling instead of die() may not be used PSR coding style
-        socket_set_option($this->master, SOL_SOCKET, SO_REUSEADDR, 1) or die("Failed: socket_option()");
-        socket_bind($this->master, $addr, $port) or die("Failed: socket_bind()");
-        socket_listen($this->master, 20) or die("Failed: socket_listen()");
+        try {
+            $this->master = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        } catch (Exception $e) {
+            $this->stdout($e . "Failed: socket_create()");
+        }
+        try {
+            socket_set_option($this->master, SOL_SOCKET, SO_REUSEADDR, 1);
+        } catch (Exception $e) {
+            $this->stdout($e . "Failed: socket_option()");
+        }
+        try {
+            socket_bind($this->master, $addr, $port);
+        } catch (Exception $e) {
+            $this->stdout($e . "Failed: socket_bind()");
+        }
+        try {
+            socket_listen($this->master, 20);
+        } catch (Exception $e) {
+            $this->stdout($e . "Failed: socket_listen()");
+        }
         $this->sockets['m'] = $this->master;
         $this->stdout("Server started\nListening on: $addr:$port\nMaster socket: " . $this->master);
     }
@@ -452,6 +465,7 @@ abstract class WebSocketServer
                 return "";
             case 9:
                 $pongReply = true;
+                break;
             case 10:
                 break;
             default:

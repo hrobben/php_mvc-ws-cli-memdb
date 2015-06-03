@@ -21,11 +21,11 @@ class CliController extends Controller
     {
         $articleModel = new ArticleModel();
         $article = $articleModel->get($id);
+        $article["out"] = $out;
 
         if ($article === false) {
             throw new Http404();
         }
-        $article["out"] = $out;
 
         $templateEngine = new TemplateEngine();
         return $templateEngine->render('cli/cliview.html', $article);
