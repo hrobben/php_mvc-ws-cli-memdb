@@ -1,9 +1,26 @@
-#!/usr/bin/env php
 <?php
 
-class echoServer extends WebSocketServer
+class WebSocketController extends Controller
+{
+    public function actionIndex()
+    {
+        $echoserver = new echoserver("0.0.0.0", WS_PORT);
+
+        try {
+            $echoserver->run();
+        } catch (Exception $e) {
+            $echoserver->stdout($e->getMessage());
+        }
+    }
+
+}
+
+
+class echoserver extends WebSocketServer
 {
     protected $maxBufferSize = 1048576; //1MB... overkill for an echo server, but potentially plausible for other applications.
+    protected $out = 'slug';
+    protected $id;
 
     protected function process($user, $message)
     {
@@ -13,36 +30,31 @@ class echoServer extends WebSocketServer
                 break;
             case "help"   :
                 $this->send($user, "help: <br> articles  => to show all articles.<br>
-                                    XML => to make output shown in XML on/off.<br>
-                                    JSON => output in JSON on/off.<br>
+                                    xml => to make output shown in XML on/off.<br>
+                                    json => output in JSON on/off.<br>
                                     article=1 => gives single article id=1");
                 break;
-            case (substr($message, 0, 8) == 'article='):
-                $xj = ($GLOBALS['XML'] ? 'xml' : '') . ($GLOBALS['JSON'] ? 'json' : '');
-                $u = '/cli/article/' . substr($message, -1 * (strlen($message) - 8)) . '/' . (empty($xj) ? 'slug' : $xj);
-                $GLOBALS['REQ_URI'] = str_replace('=', '/', $u);
-                $dispatcher = new Dispatcher();
-                $view = $dispatcher->dispatch();
+            case (substr($message, 0, 8) == 'article=' && strlen($message) > 8):
+                $this->id = substr($message, -1 * (strlen($message) - 8));
+                $send = new CliController('', '');
+                $view = $send->actionView($this->id, $this->out);
                 $this->send($user, $view);
                 break;
             case "articles"   :
-                $GLOBALS['REQ_URI'] = '/cli/';
-                $dispatcher = new Dispatcher();
-                $view = $dispatcher->dispatch();
+                $send = new CliController('', '');
+                $view = $send->actionIndex($this->out);
                 $this->send($user, $view);
                 break;
-            case "XML"   :
-                $GLOBALS['XML'] = !$GLOBALS['XML'];
-                $GLOBALS['JSON'] = false;
-                $this->send($user, 'XML = ' . ($GLOBALS['XML'] ? 'true' : 'false'));
+            case "xml"   :
+                $this->out = ($this->out == 'xml') ? '' : 'xml';
+                $this->send($user, 'JSON = ' . $this->out);
                 break;
-            case "JSON"   :
-                $GLOBALS['JSON'] = !$GLOBALS['JSON'];
-                $GLOBALS['XML'] = false;
-                $this->send($user, 'JSON = ' . ($GLOBALS['JSON'] ? 'true' : 'false'));
+            case "json"   :
+                $this->out = ($this->out == 'json') ? '' : 'json';
+                $this->send($user, 'JSON = ' . $this->out);
                 break;
             case "cli"   :
-                $this->send($user, (ISCLI ? "<b>Your on command line!</b>" : "Not on command line!"));
+                $this->send($user, (PHP_SAPI === 'cli' ? "<b>Your on command line!</b>" : "Not on command line!"));
                 break;
             default      :
                 $this->send($user, "not understood, type help for help");
@@ -65,10 +77,3 @@ class echoServer extends WebSocketServer
     }
 }
 
-$echo = new echoServer("0.0.0.0", WS_PORT);
-
-try {
-    $echo->run();
-} catch (Exception $e) {
-    $echo->stdout($e->getMessage());
-}

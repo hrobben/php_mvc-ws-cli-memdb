@@ -5,6 +5,7 @@ class Dispatcher
     protected $routes = array(
         '^/$' => array('index', 'index'),
         '^/articles/$' => array('articles', 'index'),
+        '^/websocket/$' => array('websocket', 'index'),
         '^/cli/$' => array('cli', 'index'),
         '^/cli/articles/(.+)$' => array('cli', 'index'),
         '^/cli/help$' => array('cli', 'help'),

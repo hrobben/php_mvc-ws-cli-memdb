@@ -16,7 +16,7 @@ if (PHP_SAPI === 'cli') {
                 $req_uri = '/cli/json';
                 break;
             case ('--websocket'):
-                require_once('./tools/Websocket.php');
+                $req_uri = '/websocket/';
                 break;
             default:
                 $req_uri = '/cli/help';

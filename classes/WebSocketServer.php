@@ -1,7 +1,7 @@
 <?php
 
 //require_once('./daemonize.php');
-require_once('../config/users.php');
+require_once('config/users.php');
 
 abstract class WebSocketServer
 {
