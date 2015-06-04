@@ -1,8 +1,17 @@
+PHP Simple MVC OOP with cli and websocket.
+=========================================
+
+Case about a simple mvc to check OOP qualities. Project uses a simple SQLite dbase in memory or on disk.
+Possibility to start websocket via cli. Thus through terminal line usage.
+Code applies to PSR Code styling and still working on perfect OOP usage of the used solutions.
+
+Websocket still processing & adapting. (Styling and 
+
 PHP WebSockets
 ==============
 
-A WebSockets server written in PHP.
------------------------------------
+A WebSockets server written in PHP MVC OOP
+------------------------------------------
 
 This project provides the functionality of an RFC-6455 (or Version 13) WebSockets server.  
 It can be used as a stand-alone server, or as the back-end of a normal HTTP server that is WebSockets aware.
@@ -41,10 +50,5 @@ Android Browser     4.4
 
 Note: Current browser support is available at http://en.wikipedia.org/wiki/WebSocket#Browser_support under the RFC-6455 row.
 
-For Support
------------
-
-Right now, the only support available is in the Github Issues ( https://github.com/ghedipunk/PHP-Websockets/issues ).  
-Once I reach my $250/mo Patreon reward level, I'll be able to maintain support forums for non-core code issues.  
-If you'd like to support the project, and bring these forums closer to reality, you can do so at https://www.patreon.com/ghedipunk .
 # php_mvc-ws-cli-memdb
+git address: https://github.com/hrobben/php_mvc-ws-cli-memdb.git

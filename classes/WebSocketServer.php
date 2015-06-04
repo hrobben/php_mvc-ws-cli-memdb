@@ -53,14 +53,14 @@ abstract class WebSocketServer
     public function run()
     {
         while (true) {
-            if (empty($this->sockets)) {
+            if (0 === count($this->sockets)) {
                 $this->sockets['m'] = $this->master;
             }
             $read = $this->sockets;
             $write = $except = null;
             @socket_select($read, $write, $except, null);
             foreach ($read as $socket) {
-                if ($socket == $this->master) {
+                if ($socket === $this->master) {
                     $client = socket_accept($socket);
                     if ($client < 0) {
                         $this->stderr('Failed: socket_accept()');
@@ -93,7 +93,7 @@ abstract class WebSocketServer
                                 $this->stderr('Socket error: ' . socket_strerror($sockErrNo));
                         }
 
-                    } elseif ($numBytes == 0) {
+                    } elseif ($numBytes === 0) {
                         $this->disconnect($socket);
                         $this->stderr('Client disconnected. TCP connection lost: ' . $socket);
                     } else {
@@ -146,7 +146,7 @@ abstract class WebSocketServer
                 unset($this->sockets[$disconnectedUser->id]);
             }
 
-            if (!is_null($sockErrNo)) {
+            if (null !== $sockErrNo) {
                 socket_clear_error($socket);
             }
 
@@ -172,6 +172,13 @@ abstract class WebSocketServer
 
     abstract protected function closed($user);
 
+    /**
+     * @param $message
+     * @param $user
+     * @param string $messageType
+     * @return string
+     * hexdec function may be replaced with intval in future refactoring.
+     */
     protected function frame($message, $user, $messageType = 'text')
     {
         $messageContinues = false;
@@ -194,6 +201,9 @@ abstract class WebSocketServer
             case 'pong':
                 $b1 = 10;
                 break;
+            default:
+                $b1 = 0;
+                break;
         }
         if ($messageContinues) {
             $user->sendingContinuous = true;
@@ -201,6 +211,7 @@ abstract class WebSocketServer
             $b1 += 128;
             $user->sendingContinuous = false;
         }
+
 
         $length = strlen($message);
         $lengthField = '';
@@ -215,7 +226,8 @@ abstract class WebSocketServer
             }
             $n = strlen($hexLength) - 2;
 
-            for ($i = $n; $i >= 0; $i = $i - 2) {
+            for ($i = $n; $i >= 0; $i -= 2) {
+                /** @noinspection AliasFunctionsUsageInspection */
                 $lengthField = chr(hexdec(substr($hexLength, $i, 2))) . $lengthField;
             }
             while (strlen($lengthField) < 2) {
@@ -229,7 +241,8 @@ abstract class WebSocketServer
             }
             $n = strlen($hexLength) - 2;
 
-            for ($i = $n; $i >= 0; $i = $i - 2) {
+            for ($i = $n; $i >= 0; $i -= 2) {
+                /** @noinspection AliasFunctionsUsageInspection */
                 $lengthField = chr(hexdec(substr($hexLength, $i, 2))) . $lengthField;
             }
             while (strlen($lengthField) < 8) {
@@ -243,6 +256,7 @@ abstract class WebSocketServer
     protected function doHandshake($user, $buffer)
     {
         // $magicGUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";  // must be defined in config.
+        $handshakeResponse = null;
         $headers = array();
         $lines = explode("\n", $buffer);
         foreach ($lines as $line) {
@@ -300,6 +314,7 @@ abstract class WebSocketServer
 
         $rawToken = '';
         for ($i = 0; $i < 20; $i++) {
+            /** @noinspection AliasFunctionsUsageInspection */
             $rawToken .= chr(hexdec(substr($webSocketKeyHash, $i * 2, 2)));
         }
         $handshakeToken = base64_encode($rawToken) . "\r\n";
@@ -569,7 +584,7 @@ abstract class WebSocketServer
     {
         //$this->stdout("> $message");
         $message = $this->frame($message, $user);
-        $result = @socket_write($user->socket, $message, strlen($message));
+        @socket_write($user->socket, $message, strlen($message));
     }
 
     protected function printHeaders($headers)
@@ -590,7 +605,8 @@ abstract class WebSocketServer
     protected function strtohex($str)
     {
         $strout = '';
-        for ($i = 0; $i < strlen($str); $i++) {
+        $l = strlen($str);
+        for ($i = 0; $i < $l; $i++) {
             $strout .= (ord($str[$i]) < 16) ? '0' . dechex(ord($str[$i])) : dechex(ord($str[$i]));
             $strout .= ' ';
             if ($i % 32 == 7) {
