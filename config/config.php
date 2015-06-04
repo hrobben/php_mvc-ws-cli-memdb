@@ -1,5 +1,5 @@
 <?php
-define('WS_PORT', '9030');  // websocket port
+define('WS_PORT', '9040');  // websocket port
 define('DB_FILE', ':memory:');
 // define('DB_FILE','sqlite3.db');
 if (DB_FILE === ':memory:') {    // recreate dbase if in memory
