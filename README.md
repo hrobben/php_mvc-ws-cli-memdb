@@ -6,6 +6,7 @@ Possibility to start websocket via cli. Thus through terminal line usage.
 Code applies to PSR Code styling and still working on perfect OOP usage of the used solutions.
 
 Websocket still processing & adapting. (Styling and OOP perfection)
+Websocket does work, but not complete. Planning to make or use another class.
 Work in progress..........
 
 PHP WebSockets
