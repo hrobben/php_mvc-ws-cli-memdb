@@ -2,6 +2,7 @@
 
 /** @noinspection PhpIncludeInspection */
 require 'config/config.php';
+/** @noinspection PhpIncludeInspection */
 require 'classes/Database.php';
 
 $dbFilename = DB_FILE;

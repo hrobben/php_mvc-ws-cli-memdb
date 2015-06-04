@@ -123,7 +123,7 @@ abstract class WebSocketServer
 
     protected function connect($socket)
     {
-        $user = new $this->userClass(uniqid('u'), $socket);
+        $user = new $this->userClass(uniqid('u', false), $socket);
         $this->users[$user->id] = $user;
         $this->sockets[$user->id] = $socket;
         $this->connecting($user);
@@ -163,7 +163,7 @@ abstract class WebSocketServer
     protected function getUserBySocket($socket)
     {
         foreach ($this->users as $user) {
-            if ($user->socket == $socket) {
+            if ($user->socket === $socket) {
                 return $user;
             }
         }
@@ -221,7 +221,7 @@ abstract class WebSocketServer
             $b2 = 126;
             $hexLength = dechex($length);
             //$this->stdout("Hex Length: $hexLength");
-            if (strlen($hexLength) % 2 == 1) {
+            if (strlen($hexLength) % 2 === 1) {
                 $hexLength = '0' . $hexLength;
             }
             $n = strlen($hexLength) - 2;
@@ -236,7 +236,7 @@ abstract class WebSocketServer
         } else {
             $b2 = 127;
             $hexLength = dechex($length);
-            if (strlen($hexLength) % 2 == 1) {
+            if (strlen($hexLength) % 2 === 1) {
                 $hexLength = '0' . $hexLength;
             }
             $n = strlen($hexLength) - 2;
@@ -277,7 +277,7 @@ abstract class WebSocketServer
         if (!array_key_exists('host', $headers) || !$this->checkHost($headers['host'])) {
             $handshakeResponse = 'HTTP/1.1 400 Bad Request';
         }
-        if (!array_key_exists('upgrade', $headers) || strtolower($headers['upgrade']) != 'websocket') {
+        if (!array_key_exists('upgrade', $headers) || strtolower($headers['upgrade']) !== 'websocket') {
             $handshakeResponse = 'HTTP/1.1 400 Bad Request';
         }
         if (!array_key_exists('connection', $headers) || strpos(strtolower($headers['connection']), 'upgrade') === FALSE) {
@@ -286,7 +286,7 @@ abstract class WebSocketServer
         if (!array_key_exists('sec-websocket-key', $headers)) {
             $handshakeResponse = 'HTTP/1.1 400 Bad Request';
         }
-        if (!array_key_exists('sec-websocket-version', $headers) || strtolower($headers['sec-websocket-version']) != 13) {
+        if (!array_key_exists('sec-websocket-version', $headers) || strtolower($headers['sec-websocket-version']) !== '13') {
             $handshakeResponse = "HTTP/1.1 426 Upgrade Required\r\nSec-WebSocketVersion: 13";
         }
         if (($this->headerOriginRequired && !array_key_exists('origin', $headers)) || ($this->headerOriginRequired && !$this->checkOrigin($headers['origin']))) {
@@ -420,16 +420,16 @@ abstract class WebSocketServer
             'mask' => '');
         $header['length'] = (ord($message[1]) >= 128) ? ord($message[1]) - 128 : ord($message[1]);
 
-        if ($header['length'] == 126) {
-            if ($header['hasmask']) {
-                $header['mask'] = $message[4] . $message[5] . $message[6] . $message[7];
-            }
+        if ($header['hasmask'] && $header['length'] === 126) {
+            $header['mask'] = $message[4] . $message[5] . $message[6] . $message[7];
+        }
+        if ($header['hasmask'] && $header['length'] === 127) {
+            $header['mask'] = $message[10] . $message[11] . $message[12] . $message[13];
+        }
+        if ($header['length'] === 126) {
             $header['length'] = ord($message[2]) * 256
                 + ord($message[3]);
-        } elseif ($header['length'] == 127) {
-            if ($header['hasmask']) {
-                $header['mask'] = $message[10] . $message[11] . $message[12] . $message[13];
-            }
+        } elseif ($header['length'] === 127) {
             $header['length'] = ord($message[2]) * 65536 * 65536 * 65536 * 256
                 + ord($message[3]) * 65536 * 65536 * 65536
                 + ord($message[4]) * 65536 * 65536 * 256
@@ -462,7 +462,7 @@ abstract class WebSocketServer
         return $offset;
     }
 
-    protected function deframe($message, &$user)
+    protected function deframe($message, $user) // todo: analize reference &$user who was previous used.
     {
         //echo $this->strtohex($message);
         $headers = $this->extractHeaders($message);
@@ -496,9 +496,9 @@ abstract class WebSocketServer
         }
         */
 
-        if ($this->checkRSVBits($headers, $user)) {
-            return false;
-        }
+        /*        if ($this->checkRSVBits($headers, $user)) {     // TODO: workout checkRSVBits
+                    return false;
+                }*/
 
         if ($willClose) {
             // todo: fail the connection
@@ -536,16 +536,6 @@ abstract class WebSocketServer
         return false;
     }
 
-    protected function checkRSVBits($headers, $user)
-    { // override this method if you are using an extension where the RSV bits are used.
-        $b = false;
-        if (ord($headers['rsv1']) + ord($headers['rsv2']) + ord($headers['rsv3']) > 0) {
-            //$this->disconnect($user); // todo: fail connection
-            $b = true;
-        }
-        return $b;
-    }
-
     protected function extractPayload($message, $headers)
     {
         $offset = 2;
@@ -580,6 +570,17 @@ abstract class WebSocketServer
 
     abstract protected function process($user, $message);
 
+    protected function checkRSVBits($headers, $user)
+    { // override this method if you are using an extension where the RSV bits are used.
+        $b = false;
+        if (ord($headers['rsv1']) + ord($headers['rsv2']) + ord($headers['rsv3']) > 0) {
+            //$this->disconnect($user); // todo: fail connection
+            echo 'Disconecting user : ' . $user . "\n";  // temp ref.
+            $b = true;
+        }
+        return $b;
+    }
+
     protected function send($user, $message)
     {
         //$this->stdout("> $message");
@@ -591,7 +592,7 @@ abstract class WebSocketServer
     {
         echo "Array\n(\n";
         foreach ($headers as $key => $value) {
-            if ($key == 'length' || $key == 'opcode') {
+            if ($key === 'length' || $key === 'opcode') {
                 echo "\t[$key] => $value\n\n";
             } else {
                 echo "\t[$key] => " . $this->strtohex($value) . "\n";
@@ -609,16 +610,16 @@ abstract class WebSocketServer
         for ($i = 0; $i < $l; $i++) {
             $strout .= (ord($str[$i]) < 16) ? '0' . dechex(ord($str[$i])) : dechex(ord($str[$i]));
             $strout .= ' ';
-            if ($i % 32 == 7) {
+            if ($i % 32 === 7) {
                 $strout .= ': ';
             }
-            if ($i % 32 == 15) {
+            if ($i % 32 === 15) {
                 $strout .= ': ';
             }
-            if ($i % 32 == 23) {
+            if ($i % 32 === 23) {
                 $strout .= ': ';
             }
-            if ($i % 32 == 31) {
+            if ($i % 32 === 31) {
                 $strout .= "\n";
             }
         }

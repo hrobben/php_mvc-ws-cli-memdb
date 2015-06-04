@@ -16,6 +16,7 @@ echo (json_encode($article))."\n";
 }
 if ($out == 'xml') {
 $ArrayToXml = new ArrayToXml();
-echo ($ArrayToXml->convert($article,"true"))."\n";
+echo ("
+<pre>".$ArrayToXml->convert($article,"true"))."</pre>\n";
 }
 ?>
