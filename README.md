@@ -5,7 +5,8 @@ Case about a simple mvc to check OOP qualities. Project uses a simple SQLite dba
 Possibility to start websocket via cli. Thus through terminal line usage.
 Code applies to PSR Code styling and still working on perfect OOP usage of the used solutions.
 
-Websocket still processing & adapting. (Styling and 
+Websocket still processing & adapting. (Styling and OOP perfection)
+Work in progress..........
 
 PHP WebSockets
 ==============

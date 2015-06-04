@@ -31,7 +31,7 @@
                 socket.onmessage = function (msg) {
                     log("Received: " + msg.data);
                 };
-                socket.onclose = function (msg) {
+                socket.onclose = function () {
                     log("Disconnected - status " + this.readyState);
                 };
             }
@@ -90,7 +90,7 @@
 <h3>WebSocket v2.00</h3>
 
 <div id="log"></div>
-<input id="msg" type="textbox" onkeypress="onkey(event)"/>
+<input id="msg" type="textbox" onkeypress="onkey(event)" title="logbox"/>
 <button onclick="send()">Send</button>
 <button onclick="quit()">Quit</button>
 <button onclick="reconnect()">Reconnect</button>
