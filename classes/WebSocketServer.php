@@ -329,29 +329,30 @@ abstract class WebSocketServer
 
     protected function checkHost($hostName)
     {
-        return true; // Override and return false if the host is not one that you would expect.
+        return isset($hostName); // Override and return false if the host is not one that you would expect.
         // Ex: You only want to accept hosts from the my-domain.com domain,
         // but you receive a host from malicious-site.com instead.
     }
 
     protected function checkOrigin($origin)
     {
-        return true; // Override and return false if the origin is not one that you would expect.
+        return isset($origin); // Override and return false if the origin is not one that you would expect.
     }
 
     protected function checkWebsocProtocol($protocol)
     {
-        return true; // Override and return false if a protocol is not found that you would expect.
+        return isset($protocol); // Override and return false if a protocol is not found that you would expect.
     }
 
     protected function checkWebsocExtensions($extensions)
     {
-        return true; // Override and return false if an extension is not found that you would expect.
+        return isset($extensions); // Override and return false if an extension is not found that you would expect.
     }
 
     protected function processProtocol($protocol)
     {
-        return ''; // return either "Sec-WebSocket-Protocol: SelectedProtocolFromClientList\r\n" or return an empty string.
+        return isset($protocol) ? $protocol : '';
+        // return either "Sec-WebSocket-Protocol: SelectedProtocolFromClientList\r\n" or return an empty string.
         // The carriage return/newline combo must appear at the end of a non-empty string, and must not
         // appear at the beginning of the string nor in an otherwise empty string, or it will be considered part of
         // the response body, which will trigger an error in the client as it will not be formatted correctly.
@@ -359,7 +360,7 @@ abstract class WebSocketServer
 
     protected function processExtensions($extensions)
     {
-        return ''; // return either "Sec-WebSocket-Extensions: SelectedExtensions\r\n" or return an empty string.
+        return isset($extensions) ? $extensions : ''; // return either "Sec-WebSocket-Extensions: SelectedExtensions\r\n" or return an empty string.
     }
 
     abstract protected function connected($user);

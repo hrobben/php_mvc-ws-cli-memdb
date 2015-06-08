@@ -9,7 +9,7 @@ if (DB_FILE === ':memory:') {    // recreate dbase if in memory
         unlink($dbFilename);
     }
 
-    $db = Database::getDb();
+    $db = SQLiteDbase::connect();
 
     $db->exec('CREATE TABLE articles (id INTEGER, title STRING, body STRING)');
     $db->exec('INSERT INTO articles (id, title, body) VALUES (1, "This is article #1", "Lorem ipsum etc.")');

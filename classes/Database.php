@@ -1,22 +1,26 @@
 <?php
 
-class Database
+interface Database
 {
-    private static $db;
+    public static function connect();
 
-    public static function getDb()
-    {
-        if (self::$db === null) {
-            self::openDb();
-        }
+    public function error();
 
-        return self::$db;
-    }
+    public function errno();
 
-    private static function openDb()
-    {
-        $db = new SQLite3(DB_FILE);
+    public function escape($string);
 
-        self::$db = $db;
-    }
+    public function query($query);
+
+    public function fetchArray($result);
+
+    public function fetchRow($result);
+
+    public function fetchAssoc($result);
+
+    public function fetchObject($result);
+
+    public function numRows($result);
+
+    public function close();
 }

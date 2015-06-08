@@ -8,7 +8,7 @@ class Model
     public function __construct()
     {
         // assert($this->table !== null); // for debugging alright, but in production better use:  if with exception.
-        $this->db = Database::getDb();
+        $this->db = SQLiteDbase::connect();
     }
 
     public function get($id)
